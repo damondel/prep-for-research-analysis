@@ -18,10 +18,10 @@ async function quickValidationTest() {
   
   try {
     // Connect to the server
-    console.log('📡 Connecting to Azure AI Foundry MCP Server...');
+    console.log('📡 Connecting to Prep for Research Analysis MCP Server...');
     console.log('   (This will timeout after 15 seconds if it hangs)');
     
-    const connected = await explorer.connectToServer('node', ['azure-ai-foundry-server-fixed.js']);
+    const connected = await explorer.connectToServer('node', ['prep-for-research-analysis-server.js']);
     
     if (!connected) {
       console.error('❌ Failed to connect');
@@ -55,7 +55,6 @@ async function quickValidationTest() {
   } finally {
     clearTimeout(testTimeout);
     await explorer.disconnect();
-    console.log('👋 Disconnected from MCP server');
     
     // Ensure process exits
     setTimeout(() => {

@@ -1,4 +1,5 @@
 {
+  "chat.mcp.discovery.enabled": true,
   "github.copilot.chat.mcp.servers": {
     "prep-for-research-analysis": {
       "name": "Prep for Research Analysis",
