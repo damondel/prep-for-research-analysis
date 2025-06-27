@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Azure AI Foundry MCP Server",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/azure-ai-foundry-server-fixed.js",
+      "console": "integratedTerminal",
+      "env": {
+        "AZURE_AI_FOUNDRY_ENDPOINT": "https://test-endpoint.openai.azure.com",
+        "AZURE_AI_FOUNDRY_KEY": "sk-test1234567890abcdef"
+      }
+    },
+    {
+      "name": "Run Quick Validation Test",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/tests/quick-validation.js",
+      "console": "integratedTerminal"
+    }
+  ]
+}

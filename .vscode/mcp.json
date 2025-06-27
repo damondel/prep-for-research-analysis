@@ -1,0 +1,14 @@
+{
+    "servers": {
+        "my-mcp-server-3a00e8e2": {
+            "type": "stdio",
+            "command": "node",
+            "args": [
+                "azure-ai-foundry-server-fixed.js",
+                "C:\\Users\\damondel\\dev\\projects\\mcp-explore",
+                "AZURE_AI_FOUNDRY_ENDPOINT=https://test-endpoint.openai.azure.com",
+                "AZURE_AI_FOUNDRY_KEY=sk-test1234567890abcdef"
+            ]
+        }
+    }
+}

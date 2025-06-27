@@ -6,12 +6,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables
+# Environment variables and private configuration
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+
+# User data and private examples - EXCLUDE ALL
+/tests/sample-files/
+/examples/
+*.vtt
+*.md.bak
 
 # Temporary files
 *.tmp
@@ -19,9 +23,10 @@ yarn-error.log*
 *_temp.*
 *_temporary.*
 
-# User data and examples (keep sample files)
-/tests/sample-files/*.md
-!/tests/sample-files/chris_full_azure_ai.md
+# User-generated content
+*_azure_ai.md
+*_output.md
+*_converted.md
 
 # OS generated files
 .DS_Store
@@ -41,13 +46,6 @@ Thumbs.db
 # Logs
 *.log
 logs/
-ehthumbs.db
-Thumbs.db
-
-# Editor directories and files
-.vscode/
-.idea/
-*.swp
 *.swo
 *~
 
