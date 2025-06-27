@@ -2,10 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Azure AI Foundry MCP Server",
+      "name": "Debug Prep for Research Analysis MCP Server",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/azure-ai-foundry-server-fixed.js",
+      "program": "${workspaceFolder}/prep-for-research-analysis-server.js",
       "console": "integratedTerminal",
       "env": {
         "AZURE_AI_FOUNDRY_ENDPOINT": "https://test-endpoint.openai.azure.com",
