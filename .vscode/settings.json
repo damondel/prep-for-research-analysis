@@ -1,0 +1,17 @@
+{
+  "github.copilot.chat.mcp.servers": {
+    "prep-for-research-analysis": {
+      "name": "Prep for Research Analysis",
+      "command": "node",
+      "args": ["c:\\Users\\damondel\\dev\\projects\\mcp-explore\\prep-for-research-analysis-server.js"],
+      "cwd": "c:\\Users\\damondel\\dev\\projects\\mcp-explore",
+      "env": {
+        "AZURE_AI_FOUNDRY_ENDPOINT": "https://test-endpoint.openai.azure.com",
+        "AZURE_AI_FOUNDRY_KEY": "sk-test1234567890abcdef"
+      }
+    }
+  },
+  "files.associations": {
+    "*.vtt": "plaintext"
+  }
+}
