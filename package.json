@@ -1,0 +1,42 @@
+{
+  "name": "prep-for-research-analysis",
+  "version": "1.0.0",
+  "description": "Prep for Research Analysis MCP Server - Convert transcripts and documents to clean Markdown for research analysis",
+  "main": "prep-for-research-analysis-server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node prep-for-research-analysis-server.js",
+    "server": "node prep-for-research-analysis-server.js",
+    "test": "node tests/test-enhanced-vtt.js",
+    "test:all": "npm run test:basic && npm run test:enhanced && npm run test:pipeline",
+    "test:basic": "node tests/test-azure-ai-server.js",
+    "test:pipeline": "node tests/full-pipeline-test.js",
+    "test:enhanced": "node tests/test-enhanced-vtt.js",
+    "client": "node mcp-explorer.js",
+    "lint": "echo 'No linter configured'",
+    "clean": "rm -rf node_modules package-lock.json",
+    "dev": "node --inspect prep-for-research-analysis-server.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "research",
+    "analysis",
+    "vtt",
+    "transcript",
+    "markdown",
+    "anonymization",
+    "conversion",
+    "prep"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@azure-rest/ai-inference": "^1.0.0-beta.6",
+    "@azure/core-auth": "^1.9.0",
+    "@modelcontextprotocol/sdk": "^1.13.1",
+    "js-yaml": "^4.1.0",
+    "sharp": "^0.34.2",
+    "tesseract.js": "^6.0.1"
+  }
+}
