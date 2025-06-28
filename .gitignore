@@ -13,7 +13,7 @@ yarn-error.log*
 
 # User data and private examples - EXCLUDE ALL
 /tests/sample-files/
-/examples/
+examples/
 *.vtt
 *.md.bak
 
@@ -28,6 +28,12 @@ yarn-error.log*
 *_output.md
 *_converted.md
 
+# Local development and debug files
+debug-*.js
+mcp-server-log.txt
+*.debug
+test-output/
+
 # OS generated files
 .DS_Store
 .DS_Store?
@@ -38,7 +44,7 @@ ehthumbs.db
 Thumbs.db
 
 # IDE files
-.vscode/settings.json
+# .vscode/settings.json  # Commented out - we need this for MCP
 .idea/
 *.swp
 *.swo

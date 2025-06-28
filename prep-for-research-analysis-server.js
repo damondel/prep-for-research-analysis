@@ -50,6 +50,10 @@ class PrepForResearchAnalysisMCPServer {
                   type: 'string',
                   description: 'Path to the VTT file to convert'
                 },
+                outputPath: {
+                  type: 'string',
+                  description: 'Path for output Markdown file (optional)'
+                },
                 includeTimestamps: {
                   type: 'boolean',
                   description: 'Whether to include timestamps in the output',
@@ -380,7 +384,7 @@ class PrepForResearchAnalysisMCPServer {
 
   async convertVTTToMarkdown(args) {
     try {
-      const { filePath, includeTimestamps = false, anonymizeSpeakers = true } = args;
+      const { filePath, outputPath, includeTimestamps = false, anonymizeSpeakers = true } = args;
       
       // Read VTT file
       const vttContent = await fs.readFile(filePath, 'utf-8');
@@ -417,6 +421,13 @@ class PrepForResearchAnalysisMCPServer {
           markdown += `${cue.text}\n\n`;
         }
       });
+
+      // Save to file if outputPath is provided
+      let savedPath = null;
+      if (outputPath) {
+        await fs.writeFile(outputPath, markdown, 'utf8');
+        savedPath = outputPath;
+      }
       
       return {
         content: [
@@ -428,7 +439,8 @@ class PrepForResearchAnalysisMCPServer {
               cueCount: cues.length,
               speakerCount: speakerMap.size,
               anonymized: anonymizeSpeakers,
-              sourceFile: filePath
+              sourceFile: filePath,
+              outputFile: savedPath
             }, null, 2)
           }
         ]
@@ -962,12 +974,31 @@ class PrepForResearchAnalysisMCPServer {
   }
 
   async start() {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    console.error('Prep for Research Analysis MCP Server started');
+    try {
+      const transport = new StdioServerTransport();
+      await this.server.connect(transport);
+      console.error('Prep for Research Analysis MCP Server started');
+    } catch (error) {
+      console.error('Server startup error:', error);
+      throw error;
+    }
   }
 }
 
+// Global error handlers
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
 // Start the server
 const server = new PrepForResearchAnalysisMCPServer();
-server.start().catch(console.error);
+server.start().catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+});

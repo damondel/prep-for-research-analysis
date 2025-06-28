@@ -5,7 +5,7 @@
       "label": "Start Azure AI Foundry MCP Server",
       "type": "shell",
       "command": "node",
-      "args": ["azure-ai-foundry-server-fixed.js"],
+      "args": ["prep-for-research-analysis-server.js"],
       "group": "build",
       "presentation": {
         "echo": true,
