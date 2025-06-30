@@ -13,7 +13,8 @@ Transform raw transcripts, documents, and images into clean, anonymized Markdown
 ## ✨ Key Features
 
 - **🎙️ VTT Transcript Conversion**: Convert subtitle files with intelligent speaker identification
-- **🔒 Privacy Protection**: Automatic speaker anonymization (e.g., "Jennifer Adams" → "(JA)")
+- **� Text Document Conversion**: Transform plain text files (.txt) to structured Markdown
+- **�🔒 Privacy Protection**: Automatic speaker anonymization (e.g., "Jennifer Adams" → "(JA)")
 - **📊 Research-Ready Output**: YAML frontmatter for AI analysis tools and Agent Playground
 - **🖼️ Image Processing**: Extract content from screenshots and documents using OCR
 - **📝 Content Sanitization**: Remove emails, phone numbers, and sensitive data
@@ -72,6 +73,8 @@ Add to your VS Code `settings.json`:
 ```text
 @prep-for-research-analysis convert_vtt_to_md filePath="interview.vtt" anonymizeSpeakers=true
 
+@prep-for-research-analysis convert_txt_to_md filePath="notes.txt" title="Meeting Notes" tags=["meeting", "notes"] anonymize=true
+
 @prep-for-research-analysis process_file_for_azure inputPath="meeting.vtt" title="Strategy Meeting" tags=["strategy", "planning"]
 
 @prep-for-research-analysis convert_image_to_md filePath="diagram.png" title="System Architecture"
@@ -122,6 +125,7 @@ azure_ai_foundry:
 | Tool | Description | Use Case |
 |------|-------------|----------|
 | `convert_vtt_to_md` | Convert VTT files to Markdown | Basic transcript conversion |
+| `convert_txt_to_md` | Convert plain text files to Markdown | Document structure and anonymization |
 | `process_file_for_azure` | Full pipeline with YAML frontmatter | Research analysis preparation |
 | `convert_image_to_md` | Extract text from images | Document digitization |
 | `anonymize_content` | Remove sensitive information | Privacy protection |

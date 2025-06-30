@@ -208,6 +208,53 @@ class PrepForResearchAnalysisMCPServer {
               },
               required: ['filePath']
             }
+          },
+          {
+            name: 'convert_txt_to_md',
+            description: 'Convert plain text files to Markdown with YAML frontmatter for research analysis',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                filePath: {
+                  type: 'string',
+                  description: 'Path to the text file to convert'
+                },
+                outputPath: {
+                  type: 'string',
+                  description: 'Path for output Markdown file (optional)'
+                },
+                anonymize: {
+                  type: 'boolean',
+                  description: 'Apply anonymization to text content',
+                  default: true
+                },
+                title: {
+                  type: 'string',
+                  description: 'Document title for the converted content'
+                },
+                contentType: {
+                  type: 'string',
+                  description: 'Type of content (document, notes, transcript, etc.)',
+                  default: 'document'
+                },
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Tags for Azure AI Foundry categorization'
+                },
+                preserveFormatting: {
+                  type: 'boolean',
+                  description: 'Preserve original line breaks and spacing',
+                  default: false
+                },
+                addYamlFrontmatter: {
+                  type: 'boolean',
+                  description: 'Add YAML frontmatter for Azure AI Foundry',
+                  default: true
+                }
+              },
+              required: ['filePath']
+            }
           }
         ]
       };
@@ -232,6 +279,9 @@ class PrepForResearchAnalysisMCPServer {
         
         case 'convert_image_to_md':
           return await this.convertImageToMarkdown(args);
+        
+        case 'convert_txt_to_md':
+          return await this.convertTxtToMarkdown(args);
         
         default:
           throw new Error(`Unknown tool: ${name}`);
@@ -859,6 +909,181 @@ class PrepForResearchAnalysisMCPServer {
               success: false,
               error: error.message,
               details: 'Image processing failed'
+            }, null, 2)
+          }
+        ]
+      };
+    }
+  }
+
+  async convertTxtToMarkdown(args) {
+    try {
+      const { 
+        filePath, 
+        outputPath, 
+        anonymize = true,
+        title,
+        contentType = 'document',
+        tags = [],
+        preserveFormatting = false,
+        addYamlFrontmatter = true
+      } = args;
+
+      // Validate file exists
+      try {
+        await fs.access(filePath);
+      } catch (error) {
+        throw new Error(`File not found: ${filePath}`);
+      }
+
+      // Validate text file type
+      const extension = path.extname(filePath).toLowerCase();
+      if (!['.txt', '.text', '.log'].includes(extension)) {
+        throw new Error(`Unsupported file type: ${extension}. Supported: .txt, .text, .log`);
+      }
+
+      console.log(`Converting text file: ${filePath}`);
+
+      // Read text file
+      const textContent = await fs.readFile(filePath, 'utf-8');
+      const fileName = path.basename(filePath, extension);
+      const documentTitle = title || fileName;
+
+      // Process text content
+      let processedContent = textContent;
+
+      // Apply anonymization if requested
+      if (anonymize) {
+        // Anonymize emails
+        processedContent = processedContent.replace(
+          /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+          '[EMAIL_REDACTED]'
+        );
+
+        // Anonymize phone numbers (various formats)
+        processedContent = processedContent.replace(
+          /(\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})/g,
+          '[PHONE_REDACTED]'
+        );
+
+        // Anonymize social security numbers
+        processedContent = processedContent.replace(
+          /\b\d{3}-\d{2}-\d{4}\b/g,
+          '[SSN_REDACTED]'
+        );
+
+        // Anonymize credit card numbers (basic pattern)
+        processedContent = processedContent.replace(
+          /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g,
+          '[CARD_REDACTED]'
+        );
+      }
+
+      // Format content as markdown
+      let markdown = '';
+      
+      if (addYamlFrontmatter) {
+        // Add YAML frontmatter
+        markdown += '---\n';
+        markdown += `title: ${documentTitle}\n`;
+        markdown += `created: '${new Date().toISOString()}'\n`;
+        markdown += `content_type: ${contentType}\n`;
+        
+        if (tags && tags.length > 0) {
+          markdown += 'tags:\n';
+          tags.forEach(tag => {
+            markdown += `  - ${tag}\n`;
+          });
+        }
+        
+        markdown += 'azure_ai_foundry:\n';
+        markdown += '  ready: true\n';
+        markdown += "  format_version: '1.0'\n";
+        markdown += '---\n\n';
+      }
+
+      // Add document title as header
+      markdown += `# ${documentTitle}\n\n`;
+
+      // Add processed content
+      if (preserveFormatting) {
+        // Preserve original formatting by wrapping in code block
+        markdown += '```\n';
+        markdown += processedContent;
+        markdown += '\n```\n';
+      } else {
+        // Clean up formatting for better readability
+        const lines = processedContent.split('\n');
+        let inParagraph = false;
+        
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          
+          if (trimmedLine === '') {
+            if (inParagraph) {
+              markdown += '\n\n';
+              inParagraph = false;
+            }
+          } else {
+            // Check if line looks like a header (starts with numbers, uppercase, etc.)
+            if (trimmedLine.match(/^(\d+\.|\d+\)|\*|\-|#|[A-Z][A-Z\s]+:)/)) {
+              if (inParagraph) {
+                markdown += '\n\n';
+              }
+              markdown += `${trimmedLine}\n\n`;
+              inParagraph = false;
+            } else {
+              if (!inParagraph) {
+                markdown += trimmedLine;
+                inParagraph = true;
+              } else {
+                markdown += ` ${trimmedLine}`;
+              }
+            }
+          }
+        }
+        
+        if (inParagraph) {
+          markdown += '\n';
+        }
+      }
+
+      // Save to file if outputPath is provided
+      let savedPath = null;
+      if (outputPath) {
+        await fs.writeFile(outputPath, markdown, 'utf8');
+        savedPath = outputPath;
+        console.log(`Saved converted markdown to: ${outputPath}`);
+      }
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: true,
+              markdown: markdown,
+              wordCount: processedContent.split(/\s+/).length,
+              anonymized: anonymize,
+              sourceFile: filePath,
+              outputFile: savedPath,
+              contentType: contentType,
+              tags: tags
+            }, null, 2)
+          }
+        ]
+      };
+
+    } catch (error) {
+      console.error('Text conversion error:', error);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              error: error.message,
+              sourceFile: args.filePath
             }, null, 2)
           }
         ]

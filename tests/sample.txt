@@ -1,0 +1,15 @@
+This is a sample text document for testing the new txt to markdown converter.
+
+It contains multiple paragraphs with some formatting that should be preserved.
+
+Email: john.doe@example.com
+Phone: (555) 123-4567
+
+Some technical notes:
+- Item 1: This is important
+- Item 2: This is also important
+
+SECTION A: OVERVIEW
+This section provides an overview of the document.
+
+The converter should handle this content appropriately and add the YAML frontmatter for Azure AI Foundry processing.
